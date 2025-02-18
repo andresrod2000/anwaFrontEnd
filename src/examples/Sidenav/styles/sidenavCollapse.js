@@ -16,20 +16,20 @@ function collapseItem(theme, ownerState) {
   const { palette, transitions, breakpoints, boxShadows, borders, functions } = theme;
   const { active, transparentSidenav } = ownerState;
 
-  const { dark, white, text, transparent } = palette;
+  const { dark, white, text, transparent } = palette || {};
   const { xxl } = boxShadows;
   const { borderRadius } = borders;
   const { pxToRem } = functions;
 
   return {
-    background: active && transparentSidenav ? white.main : transparent.main,
-    color: active ? dark.main : text.main,
+    background: active && transparentSidenav ? white?.main || "#ffffff" : transparent?.main || "transparent",
+    color: active ? dark?.main || "#000000" : text?.main || "#67748e",
     display: "flex",
     alignItems: "center",
     width: "100%",
     padding: `${pxToRem(10.8)} ${pxToRem(12.8)} ${pxToRem(10.8)} ${pxToRem(16)}`,
     margin: `0 ${pxToRem(16)}`,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius?.md || "4px",
     cursor: "pointer",
     userSelect: "none",
     whiteSpace: "nowrap",
@@ -39,7 +39,6 @@ function collapseItem(theme, ownerState) {
         if (active) {
           return transparentSidenav ? xxl : "none";
         }
-
         return "none";
       },
       transition: transitions.create("box-shadow", {
@@ -54,7 +53,7 @@ function collapseIconBox(theme, ownerState) {
   const { palette, transitions, breakpoints, boxShadows, borders, functions } = theme;
   const { active, transparentSidenav, color } = ownerState;
 
-  const { white, info, light, gradients } = palette;
+  const { white, info, light, gradients } = palette || {};
   const { md } = boxShadows;
   const { borderRadius } = borders;
   const { pxToRem } = functions;
@@ -62,14 +61,16 @@ function collapseIconBox(theme, ownerState) {
   return {
     background: () => {
       if (active) {
-        return color === "default" ? info.main : palette[color].main;
+        return color === "default"
+          ? info?.main || "#17c1e8"
+          : palette[color]?.main || "#cccccc";
       }
 
-      return light.main;
+      return light?.main || "#f5f5f5";
     },
     minWidth: pxToRem(32),
     minHeight: pxToRem(32),
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius?.md || "4px",
     display: "grid",
     placeItems: "center",
     boxShadow: md,
@@ -83,13 +84,13 @@ function collapseIconBox(theme, ownerState) {
         let background;
 
         if (!active) {
-          background = transparentSidenav ? white.main : light.main;
+          background = transparentSidenav ? white?.main || "#ffffff" : light?.main || "#f5f5f5";
         } else if (color === "default") {
-          background = info.main;
+          background = info?.main || "#17c1e8";
         } else if (color === "warning") {
-          background = gradients.warning.main;
+          background = gradients?.warning?.main || "#f53939";
         } else {
-          background = palette[color].main;
+          background = palette[color]?.main || "#cccccc";
         }
 
         return background;
@@ -97,20 +98,20 @@ function collapseIconBox(theme, ownerState) {
     },
 
     "& svg, svg g": {
-      fill: active ? white.main : gradients.dark.state,
+      fill: active ? white?.main || "#ffffff" : gradients?.dark?.state || "#3a416f",
     },
   };
 }
 
-const collapseIcon = ({ palette: { white, gradients } }, { active }) => ({
-  color: active ? white.main : gradients.dark.state,
+const collapseIcon = ({ palette: { white, gradients } = {} }, { active }) => ({
+  color: active ? white?.main || "#ffffff" : gradients?.dark?.state || "#3a416f",
 });
 
 function collapseText(theme, ownerState) {
   const { typography, transitions, breakpoints, functions } = theme;
   const { miniSidenav, transparentSidenav, active } = ownerState;
 
-  const { size, fontWeightMedium, fontWeightRegular } = typography;
+  const { size, fontWeightMedium, fontWeightRegular } = typography || {};
   const { pxToRem } = functions;
 
   return {
@@ -128,10 +129,11 @@ function collapseText(theme, ownerState) {
 
     "& span": {
       fontWeight: active ? fontWeightMedium : fontWeightRegular,
-      fontSize: size.sm,
+      fontSize: size?.sm || "12px",
       lineHeight: 0,
     },
   };
 }
 
 export { collapseItem, collapseIconBox, collapseIcon, collapseText };
+

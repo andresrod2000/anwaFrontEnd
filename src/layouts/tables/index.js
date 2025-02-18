@@ -26,13 +26,55 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
 
-// Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
-import projectsTableData from "layouts/tables/data/projectsTableData";
+import React, { useEffect, useState } from "react";
 
 function Tables() {
-  const { columns, rows } = authorsTableData;
-  const { columns: prCols, rows: prRows } = projectsTableData;
+  // Estado para las columnas y filas
+  const [columns, setColumns] = useState([
+    { Header: "Nombre", accessor: "nombre" },
+    { Header: "Correo", accessor: "correo" },
+    { Header: "Rol", accessor: "rol" },
+  ]);
+
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("http://3.133.144.184:8000/api/usuarios/");
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+
+        // Transformar los datos de la API al formato esperado por la tabla
+        const transformedRows = data.map((user) => ({
+          nombre: user.nombre || "Sin nombre", // Valor por defecto
+          correo: user.correo || "Sin correo", // Valor por defecto
+          rol: obtenerRol(user.rol) || "Desconocido", // Valor por defecto
+        }));
+
+        setRows(transformedRows);
+      } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const obtenerRol = (rol) => {
+    switch (rol) {
+      case 1:
+        return "Administrador";
+      case 2:
+        return "Editor";
+      case 3:
+        return "Usuario";
+      default:
+        return "Desconocido";
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -41,7 +83,7 @@ function Tables() {
         <SoftBox mb={3}>
           <Card>
             <SoftBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
-              <SoftTypography variant="h6">Authors table</SoftTypography>
+              <SoftTypography variant="h6">Authors Table</SoftTypography>
             </SoftBox>
             <SoftBox
               sx={{
@@ -53,13 +95,17 @@ function Tables() {
                 },
               }}
             >
-              <Table columns={columns} rows={rows} />
+              {rows.length > 0 ? (
+                <Table columns={columns} rows={rows} />
+              ) : (
+                <SoftTypography variant="body2">Cargando datos...</SoftTypography>
+              )}
             </SoftBox>
           </Card>
         </SoftBox>
         <Card>
           <SoftBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
-            <SoftTypography variant="h6">Projects table</SoftTypography>
+            <SoftTypography variant="h6">Projects Table</SoftTypography>
           </SoftBox>
           <SoftBox
             sx={{
@@ -71,7 +117,7 @@ function Tables() {
               },
             }}
           >
-            <Table columns={prCols} rows={prRows} />
+            <Table columns={columns} rows={rows} />
           </SoftBox>
         </Card>
       </SoftBox>

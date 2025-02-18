@@ -27,20 +27,22 @@ import SoftTypography from "components/SoftTypography";
 // Soft UI Dashboard React base styles
 import typography from "assets/theme/base/typography";
 
-function Footer({ company, links }) {
+function Footer({ company = {}, links }) {
   const { href, name } = company;
   const { size } = typography;
 
   const renderLinks = () =>
-    links.map((link) => (
-      <SoftBox key={link.name} component="li" px={2} lineHeight={1}>
-        <Link href={link.href} target="_blank">
-          <SoftTypography variant="button" fontWeight="regular" color="text">
-            {link.name}
-          </SoftTypography>
-        </Link>
-      </SoftBox>
-    ));
+    Array.isArray(links) && links.length > 0 ? (
+      links.map((link) => (
+        <SoftBox key={link.name} component="li" px={2} lineHeight={1}>
+          <Link href={link.href} target="_blank">
+            <SoftTypography variant="button" fontWeight="regular" color="text">
+              {link.name}
+            </SoftTypography>
+          </Link>
+        </SoftBox>
+      ))
+    ) : null; // Retorna `null` si links no es un array válido
 
   return (
     <SoftBox

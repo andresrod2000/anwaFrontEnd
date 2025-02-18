@@ -25,11 +25,14 @@ export default styled(Avatar)(({ theme, ownerState }) => {
   const { pxToRem, linearGradient } = functions;
   const { size: fontSize, fontWeightBold } = typography;
 
-  // backgroundImage value
-  const backgroundValue =
-    bgColor === "transparent"
-      ? transparent.main
-      : linearGradient(gradients[bgColor].main, gradients[bgColor].state);
+// backgroundImage value
+const backgroundValue =
+  bgColor === "transparent"
+    ? transparent?.main || "transparent" // Usa "transparent" si transparent.main es undefined
+    : gradients[bgColor]
+    ? linearGradient(gradients[bgColor]?.main || "#fff", gradients[bgColor]?.state || "#fff")
+    : "transparent"; // Usa un valor predeterminado si gradients[bgColor] es undefined
+
 
   // size value
   let sizeValue;
