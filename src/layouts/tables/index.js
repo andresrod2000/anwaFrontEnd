@@ -42,7 +42,7 @@ function Tables() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://3.133.144.184:8000/api/usuarios/");
+        const response = await fetch("https://anwabackend.duckdns.org/api/usuarios/");
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
         }
