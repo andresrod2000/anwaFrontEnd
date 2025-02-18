@@ -74,7 +74,7 @@ function Footer({ company = {}, links }) {
             &nbsp;{name}&nbsp;
           </SoftTypography>
         </Link>
-        Anta Team .
+        Anwa Team .
       </SoftBox>
       <SoftBox
         component="ul"
