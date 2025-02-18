@@ -62,7 +62,7 @@ function Footer({ company = {}, links }) {
         fontSize={size.sm}
         px={1.5}
       >
-        &copy; {new Date().getFullYear()}, made with
+        &copy; {new Date().getFullYear()}, Hecho con 
         <SoftBox fontSize={size.md} color="text" mb={-0.5} mx={0.25}>
           <Icon color="inherit" fontSize="inherit">
             favorite
@@ -74,7 +74,7 @@ function Footer({ company = {}, links }) {
             &nbsp;{name}&nbsp;
           </SoftTypography>
         </Link>
-        for a better web.
+        Anta Team .
       </SoftBox>
       <SoftBox
         component="ul"

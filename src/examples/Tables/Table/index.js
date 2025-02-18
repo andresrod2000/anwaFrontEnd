@@ -43,29 +43,17 @@ function Table({ columns, rows }) {
   const { borderWidth } = borders;
 
   const renderColumns = columns.map(({ name, align, width }, key) => {
-    let pl;
-    let pr;
-
-    if (key === 0) {
-      pl = 3;
-      pr = 3;
-    } else if (key === columns.length - 1) {
-      pl = 3;
-      pr = 3;
-    } else {
-      pl = 1;
-      pr = 1;
-    }
-
+    const columnKey = name ? name.toLowerCase().replace(/\s/g, "-") : `column-${key}`;
+  
     return (
       <SoftBox
-        key={name}
+        key={columnKey} // Asegura una clave única
         component="th"
         width={width || "auto"}
         pt={1.5}
         pb={1.25}
-        pl={align === "left" ? pl : 3}
-        pr={align === "right" ? pr : 3}
+        pl={align === "left" ? 3 : 1}
+        pr={align === "right" ? 3 : 1}
         textAlign={align}
         fontSize={size.xxs}
         fontWeight={fontWeightBold}
@@ -73,58 +61,37 @@ function Table({ columns, rows }) {
         opacity={0.7}
         borderBottom={`${borderWidth[1]} solid ${light.main}`}
       >
-        {name.toUpperCase()}
+        {name ? name.toUpperCase() : ""}
       </SoftBox>
     );
   });
+  
+  
 
   const renderRows = rows.map((row, key) => {
     const rowKey = `row-${key}`;
 
-    const tableRow = columns.map(({ name, align }) => {
-      let template;
-
-      if (Array.isArray(row[name])) {
-        template = (
-          <SoftBox
-            key={uuidv4()}
-            component="td"
-            p={1}
-            borderBottom={row.hasBorder ? `${borderWidth[1]} solid ${light.main}` : null}
+    const tableRow = columns.map(({ accessor, align }) => {  // ✅ Usamos accessor en lugar de name
+      return (
+        <SoftBox
+          key={`cell-${rowKey}-${accessor}`}
+          component="td"
+          p={1}
+          textAlign={align}
+          borderBottom={row.hasBorder ? `${borderWidth[1]} solid ${light.main}` : null}
+        >
+          <SoftTypography
+            variant="button"
+            fontWeight="regular"
+            color="secondary"
+            sx={{ display: "inline-block", width: "max-content" }}
           >
-            <SoftBox display="flex" alignItems="center" py={0.5} px={1}>
-              <SoftBox mr={2}>
-                <SoftAvatar src={row[name][0]} name={row[name][1]} variant="rounded" size="sm" />
-              </SoftBox>
-              <SoftTypography variant="button" fontWeight="medium" sx={{ width: "max-content" }}>
-                {row[name][1]}
-              </SoftTypography>
-            </SoftBox>
-          </SoftBox>
-        );
-      } else {
-        template = (
-          <SoftBox
-            key={uuidv4()}
-            component="td"
-            p={1}
-            textAlign={align}
-            borderBottom={row.hasBorder ? `${borderWidth[1]} solid ${light.main}` : null}
-          >
-            <SoftTypography
-              variant="button"
-              fontWeight="regular"
-              color="secondary"
-              sx={{ display: "inline-block", width: "max-content" }}
-            >
-              {row[name]}
-            </SoftTypography>
-          </SoftBox>
-        );
-      }
-
-      return template;
+            {row[accessor]} {/* ✅ Ahora sí accedemos a los datos correctamente */}
+          </SoftTypography>
+        </SoftBox>
+      );
     });
+    
 
     return <TableRow key={rowKey}>{tableRow}</TableRow>;
   });

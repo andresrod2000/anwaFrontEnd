@@ -31,10 +31,11 @@ import React, { useEffect, useState } from "react";
 function Tables() {
   // Estado para las columnas y filas
   const [columns, setColumns] = useState([
-    { Header: "Nombre", accessor: "nombre" },
-    { Header: "Correo", accessor: "correo" },
-    { Header: "Rol", accessor: "rol" },
+    { name: "Nombre", accessor: "nombre", align: "left" },
+    { name: "Correo", accessor: "correo", align: "left" },
+    { name: "Rol", accessor: "rol", align: "left" },
   ]);
+  
 
   const [rows, setRows] = useState([]);
 
@@ -46,19 +47,23 @@ function Tables() {
           throw new Error(`Error: ${response.status}`);
         }
         const data = await response.json();
-
-        // Transformar los datos de la API al formato esperado por la tabla
+    
+        console.log("Datos recibidos de la API:", data); // 🟢 DEPURACIÓN
+    
         const transformedRows = data.map((user) => ({
-          nombre: user.nombre || "Sin nombre", // Valor por defecto
-          correo: user.correo || "Sin correo", // Valor por defecto
-          rol: obtenerRol(user.rol) || "Desconocido", // Valor por defecto
+          nombre: user.nombre ? user.nombre.toUpperCase() : "SIN NOMBRE",
+          correo: user.correo || "SIN CORREO",
+          rol: obtenerRol(user.rol) || "Desconocido",
         }));
-
+    
+        console.log("Datos transformados para la tabla:", transformedRows); // 🟢 DEPURACIÓN
+    
         setRows(transformedRows);
       } catch (error) {
         console.error("Error al obtener los usuarios:", error);
       }
     };
+    
 
     fetchUsers();
   }, []);
@@ -83,7 +88,7 @@ function Tables() {
         <SoftBox mb={3}>
           <Card>
             <SoftBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
-              <SoftTypography variant="h6">Authors Table</SoftTypography>
+              <SoftTypography variant="h6">Tabla Usuarios</SoftTypography>
             </SoftBox>
             <SoftBox
               sx={{
@@ -103,7 +108,7 @@ function Tables() {
             </SoftBox>
           </Card>
         </SoftBox>
-        <Card>
+        {/* <Card>
           <SoftBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
             <SoftTypography variant="h6">Projects Table</SoftTypography>
           </SoftBox>
@@ -119,7 +124,7 @@ function Tables() {
           >
             <Table columns={columns} rows={rows} />
           </SoftBox>
-        </Card>
+        </Card> */}
       </SoftBox>
       <Footer />
     </DashboardLayout>
