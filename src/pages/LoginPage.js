@@ -12,12 +12,13 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await login(correo, password);
-            navigate("/dashboard"); // Redirige después de iniciar sesión
+            await login(correo, password); // Espera a que el login termine
+            setTimeout(() => navigate("/dashboard"), 500); // Redirige con un pequeño retraso
         } catch (error) {
             setError("Credenciales incorrectas, intenta nuevamente.");
         }
     };
+    
 
     return (
         <div style={{ maxWidth: "400px", margin: "auto", textAlign: "center", padding: "20px" }}>
