@@ -5,68 +5,78 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem("access_token") || null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem("access_token");
         if (token) {
             fetchUser(token);
         } else {
             setLoading(false);
         }
-    }, []);
+    }, [token]);
 
     const fetchUser = async (token) => {
         try {
             const response = await fetch("https://anwabackend.duckdns.org/api/user/", {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
             });
-            if (response.ok) {
-                const data = await response.json();
-                setUser(data);
-            } else {
-                localStorage.removeItem("access_token");
-                setUser(null);
+
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: No autorizado`);
             }
+
+            const data = await response.json();
+            setUser(data);
         } catch (error) {
-            console.error("Error fetching user:", error);
-            setUser(null);
+            console.error("⚠️ Error obteniendo usuario:", error);
+            logout();
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const login = async (correo, password) => {
-        const response = await fetch("https://anwabackend.duckdns.org/api/token/", {  // ✅ Asegurar URL correcta
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ correo, password }),
-        });
-    
-        if (response.ok) {
+        try {
+            const response = await fetch("https://anwabackend.duckdns.org/api/token/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ correo, password }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Credenciales inválidas");
+            }
+
             const data = await response.json();
+            console.log("🔑 Token obtenido en login:", data.access);
             localStorage.setItem("access_token", data.access);
+            setToken(data.access);  // ✅ Se actualiza el estado del token
             fetchUser(data.access);
-        } else {
-            throw new Error("Credenciales inválidas");
+        } catch (error) {
+            console.error("⚠️ Error en login:", error);
+            throw error;
         }
     };
-    
 
     const logout = () => {
         localStorage.removeItem("access_token");
+        setToken(null);
         setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, token, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-// Validación de propTypes
 AuthProvider.propTypes = {
-    children: PropTypes.node.isRequired, // Valida que children sea un nodo de React
+    children: PropTypes.node.isRequired,
 };
 
 export default AuthContext;

@@ -15,7 +15,7 @@ Coded by www.creative-tim.com
 
 // @mui material components
 import Card from "@mui/material/Card";
-
+import AuthContext from "../../context/AuthContext"; // Importa el contexto de autenticación
 // Soft UI Dashboard React components
 import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
@@ -26,7 +26,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext  } from "react";
 
 function Tables() {
   // Estado para las columnas y filas
@@ -36,37 +36,36 @@ function Tables() {
     { name: "Rol", accessor: "rol", align: "left" },
   ]);
   
-
+  const { token } = useContext(AuthContext); 
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      try {
-        const response = await fetch("https://anwabackend.duckdns.org/api/usuarios/");
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
+        if (!token) return; // Si no hay token, no hacemos la solicitud
+
+        try {
+            const response = await fetch("https://anwabackend.duckdns.org/api/usuarios/", {
+                headers: {
+                    "Authorization": `Bearer ${token}`,  // 🔑 Agregar token en headers
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
+
+            const data = await response.json();
+            setRows(data.map(user => ({
+                nombre: user.nombre ? user.nombre.toUpperCase() : "SIN NOMBRE",
+                correo: user.correo || "SIN CORREO",
+                rol: obtenerRol(user.rol) || "Desconocido",
+            })));
+        } catch (error) {
+            console.error("Error al obtener los usuarios:", error);
         }
-        const data = await response.json();
-    
-        console.log("Datos recibidos de la API:", data); // 🟢 DEPURACIÓN
-    
-        const transformedRows = data.map((user) => ({
-          nombre: user.nombre ? user.nombre.toUpperCase() : "SIN NOMBRE",
-          correo: user.correo || "SIN CORREO",
-          rol: obtenerRol(user.rol) || "Desconocido",
-        }));
-    
-        console.log("Datos transformados para la tabla:", transformedRows); // 🟢 DEPURACIÓN
-    
-        setRows(transformedRows);
-      } catch (error) {
-        console.error("Error al obtener los usuarios:", error);
-      }
     };
-    
 
     fetchUsers();
-  }, []);
+}, [token]);
 
   const obtenerRol = (rol) => {
     switch (rol) {
