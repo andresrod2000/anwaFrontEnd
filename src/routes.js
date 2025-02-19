@@ -72,6 +72,7 @@ const routes = [
     icon: <Office size="12px" />,
     component: <Tables />,
     noCollapse: true,
+    private: true,
   },
   {
     type: "collapse",
@@ -81,6 +82,7 @@ const routes = [
     icon: <CreditCard size="12px" />,
     component: <Billing />,
     noCollapse: true,
+    private: true,
   },
  
  
@@ -93,6 +95,7 @@ const routes = [
     icon: <CustomerSupport size="12px" />,
     component: <Profile />,
     noCollapse: true,
+    private: true,
   },
   { key: "login", route: "/login", component: <LoginPage />, private: false },
 
