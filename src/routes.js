@@ -52,7 +52,7 @@ import SpaceShip from "examples/Icons/SpaceShip";
 import CustomerSupport from "examples/Icons/CustomerSupport";
 import CreditCard from "examples/Icons/CreditCard";
 import Cube from "examples/Icons/Cube";
-
+import LoginPage from "pages/LoginPage";
 const routes = [
   {
     type: "collapse",
@@ -62,6 +62,7 @@ const routes = [
     icon: <Shop size="12px" />,
     component: <Dashboard />,
     noCollapse: true,
+    private: true,
   },
   {
     type: "collapse",
@@ -93,6 +94,7 @@ const routes = [
     component: <Profile />,
     noCollapse: true,
   },
+  { key: "login", route: "/login", component: <LoginPage />, private: false },
 
 
 ];
