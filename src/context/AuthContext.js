@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async (token) => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/user/", {
+            const response = await fetch("https://anwabackend.duckdns.org/api/user/", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (response.ok) {
