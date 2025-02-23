@@ -29,7 +29,7 @@ const LoginPage = () => {
                     type="email"
                     placeholder="Correo"
                     value={correo}
-                    onChange={(e) => setCorreo(e.target.value)}
+                    onChange={(e) => setCorreo(e.target.value.toLowerCase())}
                     required
                     style={{ width: "100%", padding: "10px", margin: "10px 0" }}
                 />
