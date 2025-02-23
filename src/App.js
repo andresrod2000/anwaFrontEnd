@@ -16,7 +16,8 @@ Coded by www.creative-tim.com
 import PrivateRoute from "./utils/PrivateRoute";  // Ruta protegida
 import LoginPage from "pages/LoginPage";
 import { useState, useEffect, useMemo } from "react";
-
+import { useContext } from "react";
+import AuthContext from "./context/AuthContext";
 // react-router components
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
@@ -51,6 +52,10 @@ import { useSoftUIController, setMiniSidenav, setOpenConfigurator } from "contex
 import brand from "assets/images/logo-ct.png";
 
 export default function App() {
+  const { user } = useContext(AuthContext); //Obtiene el usuario autenticado
+  console.log("Usuario autenticado:", user); //
+  const filteredRoutes = routes.filter((route) => !route.private || user);
+
   const [controller, dispatch] = useSoftUIController();
   const { miniSidenav, direction, layout, openConfigurator, sidenavColor } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
@@ -102,7 +107,7 @@ export default function App() {
       if (route.collapse) {
         return getRoutes(route.collapse);
       }
-  
+
       if (route.route) {
         return route.private ? (
           <Route element={<PrivateRoute />} key={route.key}>
@@ -112,7 +117,7 @@ export default function App() {
           <Route exact path={route.route} element={route.component} key={route.key} />
         );
       }
-  
+
       return null;
     });
   

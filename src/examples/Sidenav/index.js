@@ -12,7 +12,7 @@ Coded by www.creative-tim.com
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-
+import React, { useContext } from "react";
 import { useEffect } from "react";
 
 // react-router-dom components
@@ -42,13 +42,17 @@ import sidenavLogoLabel from "examples/Sidenav/styles/sidenav";
 
 // Soft UI Dashboard React context
 import { useSoftUIController, setMiniSidenav } from "context";
+import AuthContext from "../../context/AuthContext";
 
 function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const [controller, dispatch] = useSoftUIController();
   const { miniSidenav, transparentSidenav } = controller;
+  const { user } = useContext(AuthContext);
   const location = useLocation();
   const { pathname } = location;
   const collapseName = pathname.split("/").slice(1)[0];
+
+  if (!user || pathname === "/login") return null;
 
   const closeSidenav = () => setMiniSidenav(dispatch, true);
 
