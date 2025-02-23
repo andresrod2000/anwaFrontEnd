@@ -12,7 +12,7 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await login(correo, password); // Espera a que el login termine
+            await login(correo.toLowerCase(), password); // Espera a que el login termine
             setTimeout(() => navigate("/dashboard"), 500); // Redirige con un pequeño retraso
         } catch (error) {
             setError("Credenciales incorrectas, intenta nuevamente.");
@@ -29,7 +29,7 @@ const LoginPage = () => {
                     type="email"
                     placeholder="Correo"
                     value={correo}
-                    onChange={(e) => setCorreo(e.target.value.toLowerCase())}
+                    onChange={(e) => setCorreo(e.target.value)}
                     required
                     style={{ width: "100%", padding: "10px", margin: "10px 0" }}
                 />
