@@ -54,10 +54,11 @@ function Tables() {
             if (!response.ok) throw new Error(`Error: ${response.status}`);
 
             const data = await response.json();
+            console.log(data)
             setRows(data.map(user => ({
                 nombre: user.nombre ? user.nombre.toUpperCase() : "SIN NOMBRE",
                 correo: user.correo || "SIN CORREO",
-                rol: obtenerRol(user.rol) || "Desconocido",
+                rol: user.rol || "Desconocido",
             })));
         } catch (error) {
             console.error("Error al obtener los usuarios:", error);
