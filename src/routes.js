@@ -39,9 +39,8 @@ Coded by www.creative-tim.com
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
 import Billing from "layouts/billing";
-import VirtualReality from "layouts/virtual-reality";
-import RTL from "layouts/rtl";
 import Profile from "layouts/profile";
+import { LayoutDashboard, Package, ShoppingCart, Users, Truck, Layers } from "lucide-react";
 
 // Soft UI Dashboard React icons
 import Shop from "examples/Icons/Shop";
@@ -60,16 +59,56 @@ const routes = [
     key: "dashboard",
     route: "/dashboard",
     icon: <Shop size="12px" />,
-    component: <Dashboard />,
+    component: <LayoutDashboard />,
     noCollapse: true,
     private: true,
   },
   {
     type: "collapse",
-    name: "Tables",
+    name: "Productos",
+    key: "productos",
+    route: "/tables",
+    icon: <Package size="12px" />,
+    component: <Tables />,
+    noCollapse: true,
+    private: true,
+  },
+  {
+    type: "collapse",
+    name: "Ventas",
+    key: "ventas",
+    route: "/ventas",
+    icon: <ShoppingCart  size="12px" />,
+    component: <Tables />,
+    noCollapse: true,
+    private: true,
+  },
+  {
+    type: "collapse",
+    name: "Usuarios",
     key: "tables",
     route: "/tables",
-    icon: <Office size="12px" />,
+    icon: <Users  size="12px" />,
+    component: <Tables />,
+    noCollapse: true,
+    private: true,
+  },
+  {
+    type: "collapse",
+    name: "Proveedores",
+    key: "proveedores",
+    route: "/tables",
+    icon: <Truck  size="12px" />,
+    component: <Tables />,
+    noCollapse: true,
+    private: true,
+  },
+  {
+    type: "collapse",
+    name: "Categorias",
+    key: "categorias",
+    route: "/tables",
+    icon: <Layers  size="12px" />,
     component: <Tables />,
     noCollapse: true,
     private: true,
