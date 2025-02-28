@@ -26,6 +26,7 @@ import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 
 function MiniStatisticsCard({ bgColor, title, count, percentage, icon, direction }) {
+  console.log('bgColor',bgColor);
   return (
     <Card>
       <SoftBox bgColor={bgColor} variant="gradient">
@@ -35,7 +36,7 @@ function MiniStatisticsCard({ bgColor, title, count, percentage, icon, direction
               <Grid item>
                 <SoftBox
                   variant="gradient"
-                  bgColor={bgColor === "white" ? icon.color : "white"}
+                  bgColor={bgColor === "white" ? icon.color : "black"}
                   color={bgColor === "white" ? "white" : "dark"}
                   width="3rem"
                   height="3rem"
@@ -65,7 +66,7 @@ function MiniStatisticsCard({ bgColor, title, count, percentage, icon, direction
                 <SoftTypography
                   variant="h5"
                   fontWeight="bold"
-                  color={bgColor === "white" ? "dark" : "white"}
+                  color={bgColor === "black" ? "dark" : "white"}
                 >
                   {count}{" "}
                   <SoftTypography variant="button" color={percentage.color} fontWeight="bold">
