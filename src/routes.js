@@ -43,14 +43,9 @@ import Profile from "layouts/profile";
 import { LayoutDashboard, Package, ShoppingCart, Users, Truck, Layers } from "lucide-react";
 
 // Soft UI Dashboard React icons
-import Shop from "examples/Icons/Shop";
-import Office from "examples/Icons/Office";
-import Settings from "examples/Icons/Settings";
-import Document from "examples/Icons/Document";
-import SpaceShip from "examples/Icons/SpaceShip";
+
 import CustomerSupport from "examples/Icons/CustomerSupport";
 import CreditCard from "examples/Icons/CreditCard";
-import Cube from "examples/Icons/Cube";
 import LoginPage from "pages/LoginPage";
 const routes = [
   {
@@ -126,6 +121,16 @@ const routes = [
  
  
   { type: "title", title: "Account Pages", key: "account-pages" },
+  {
+    type: "collapse",
+    name: "Auditoria",
+    key: "auditoria",
+    route: "/auditoria",
+    icon: <CustomerSupport size="12px" />,
+    component: <Profile />,
+    noCollapse: true,
+    private: true,
+  },
   {
     type: "collapse",
     name: "Profile",

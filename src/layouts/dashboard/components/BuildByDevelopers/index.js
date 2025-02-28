@@ -24,9 +24,38 @@ import SoftTypography from "components/SoftTypography";
 
 // Images
 import wavesWhite from "assets/images/shapes/waves-white.svg";
-import rocketWhite from "assets/images/illustrations/rocket-white.png";
+import rocketWhite from "assets/images/illustrations/hamburguesa.png";
+import { useState, useEffect } from "react";
 
 function BuildByDevelopers() {
+  const [phrase, setPhrase] = useState("");
+  const [author, setAuthor] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPhrase = async () => {
+      try {
+        const response = await fetch("https://anwabackend.duckdns.org/api/api/phrase/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const data = await response.json();
+        setPhrase(data.phrase);
+        setAuthor(data.author);
+      } catch (error) {
+        console.error("Error fetching the phrase:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPhrase();
+  }, []);
   return (
     <Card>
       <SoftBox p={2}>
@@ -39,12 +68,11 @@ function BuildByDevelopers() {
                 </SoftTypography>
               </SoftBox>
               <SoftTypography variant="h5" fontWeight="bold" gutterBottom>
-                Soft UI Dashboard
+                Frase del Día
               </SoftTypography>
               <SoftBox mb={6}>
                 <SoftTypography variant="body2" color="text">
-                  From colors, cards, typography to complex elements, you will find the full
-                  documentation.
+                {phrase} - &quot;{author}&quot;
                 </SoftTypography>
               </SoftBox>
               <SoftTypography
@@ -82,7 +110,7 @@ function BuildByDevelopers() {
               display="grid"
               justifyContent="center"
               alignItems="center"
-              bgColor="info"
+              bgColor="warning"
               borderRadius="lg"
               variant="gradient"
             >

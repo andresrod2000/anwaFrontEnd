@@ -54,7 +54,8 @@ function Dashboard() {
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6} xl={3}>
               <MiniStatisticsCard
-                title={{ text: "today's money" }}
+                bgColor="success" 
+                title={{ text: "Ganancias de hoy" }}
                 count="$53,000"
                 percentage={{ color: "success", text: "+55%" }}
                 icon={{ color: "info", component: "paid" }}
@@ -62,7 +63,8 @@ function Dashboard() {
             </Grid>
             <Grid item xs={12} sm={6} xl={3}>
               <MiniStatisticsCard
-                title={{ text: "today's users" }}
+              bgColor="info"
+                title={{ text: "Clientes de Hoy" }}
                 count="2,300"
                 percentage={{ color: "success", text: "+3%" }}
                 icon={{ color: "info", component: "public" }}
@@ -70,7 +72,8 @@ function Dashboard() {
             </Grid>
             <Grid item xs={12} sm={6} xl={3}>
               <MiniStatisticsCard
-                title={{ text: "new clients" }}
+                bgColor = "warning"
+                title={{ text: "Producto más Popular de Hoy" }}
                 count="+3,462"
                 percentage={{ color: "error", text: "-2%" }}
                 icon={{ color: "info", component: "emoji_events" }}
@@ -78,7 +81,8 @@ function Dashboard() {
             </Grid>
             <Grid item xs={12} sm={6} xl={3}>
               <MiniStatisticsCard
-                title={{ text: "sales" }}
+                bgColor="secondary"
+                title={{ text: "Ventas de Hoy" }}
                 count="$103,430"
                 percentage={{ color: "success", text: "+5%" }}
                 icon={{
@@ -103,6 +107,7 @@ function Dashboard() {
           <Grid container spacing={3}>
             <Grid item xs={12} lg={5}>
               <ReportsBarChart
+                color="primary"
                 title="active users"
                 description={
                   <>
@@ -115,6 +120,7 @@ function Dashboard() {
             </Grid>
             <Grid item xs={12} lg={7}>
               <GradientLineChart
+                
                 title="Sales Overview"
                 description={
                   <SoftBox display="flex" alignItems="center">
