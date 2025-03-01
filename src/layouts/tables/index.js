@@ -27,7 +27,7 @@ import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
 
 import React, { useEffect, useState, useContext  } from "react";
-
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 function Tables() {
   // Estado para las columnas y filas
   const [columns, setColumns] = useState([
@@ -44,7 +44,7 @@ function Tables() {
         if (!token) return; // Si no hay token, no hacemos la solicitud
 
         try {
-            const response = await fetch("https://anwabackend.duckdns.org/api/usuarios/", {
+            const response = await fetch(`${API_BASE_URL}/api/usuarios/`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,  // 🔑 Agregar token en headers
                     "Content-Type": "application/json",
