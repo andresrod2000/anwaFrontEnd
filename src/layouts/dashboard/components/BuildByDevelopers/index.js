@@ -31,11 +31,12 @@ function BuildByDevelopers() {
   const [phrase, setPhrase] = useState("");
   const [author, setAuthor] = useState("");
   const [loading, setLoading] = useState(true);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchPhrase = async () => {
       try {
-        const response = await fetch("https://anwabackend.duckdns.org/api/api/phrase/", {
+        const response = await fetch(`${API_BASE_URL}/api/api/phrase/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

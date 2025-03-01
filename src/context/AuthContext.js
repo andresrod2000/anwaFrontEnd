@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { createContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
-
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("access_token") || null);
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async (token) => {
         try {
-            const response = await fetch("https://backend.anwa.pro/api/user/", {
+            const response = await fetch(`${API_BASE_URL}/api/user/`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (correo, password) => {
         try {
-            const response = await fetch("https://backend.anwa.pro/api/token/", {
+            const response = await fetch(`${API_BASE_URL}/api/token/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ correo, password }),
