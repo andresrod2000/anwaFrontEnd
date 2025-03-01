@@ -35,6 +35,7 @@ import typography from "assets/theme/base/typography";
 // Dashboard layout components
 import BuildByDevelopers from "layouts/dashboard/components/BuildByDevelopers";
 import WorkWithTheRockets from "layouts/dashboard/components/WorkWithTheRockets";
+import PedidosEnCurso  from "layouts/dashboard/PedidosEnCurso";
 import Projects from "layouts/dashboard/components/Projects";
 import OrderOverview from "layouts/dashboard/components/OrderOverview";
 
@@ -99,7 +100,7 @@ function Dashboard() {
               <BuildByDevelopers />
             </Grid>
             <Grid item xs={12} lg={5}>
-              <WorkWithTheRockets />
+              <PedidosEnCurso />
             </Grid>
           </Grid>
         </SoftBox>
