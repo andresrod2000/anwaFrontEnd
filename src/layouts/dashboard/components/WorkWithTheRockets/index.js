@@ -46,7 +46,7 @@ function WorkWithTheRockets() {
         >
           <SoftBox mb={3} pt={1}>
             <SoftTypography variant="h5" color="white" fontWeight="bold">
-              Work with the rockets
+              Pedidos en Curso
             </SoftTypography>
           </SoftBox>
           <SoftBox mb={2}>

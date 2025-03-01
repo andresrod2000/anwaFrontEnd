@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async (token) => {
         try {
-            const response = await fetch("https://anwabackend.duckdns.org/api/user/", {
+            const response = await fetch("https://backend.anwa.pro/api/user/", {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (correo, password) => {
         try {
-            const response = await fetch("https://anwabackend.duckdns.org/api/token/", {
+            const response = await fetch("https://backend.anwa.pro/api/token/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ correo, password }),
