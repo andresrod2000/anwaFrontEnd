@@ -70,6 +70,16 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Pedidos",
+    key: "pedidos",
+    route: "/pedidos",
+    icon: <Package size="12px" />,
+    component: <Tables />,
+    noCollapse: true,
+    private: true,
+  },
+  {
+    type: "collapse",
     name: "Ventas",
     key: "ventas",
     route: "/ventas",
