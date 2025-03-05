@@ -10,7 +10,7 @@ import Button from "@mui/material/Button";
 
 import AuthContext from "../../../context/AuthContext"; 
 
-const API_BASE_URL = "http://127.0.0.1:8000"; // Ajusta si es necesario
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Ajusta si es necesario
 
 function AddOrderModal({ open, handleClose, fetchOrders }) {
   const { token } = useContext(AuthContext); // Obtener el token desde el contexto
