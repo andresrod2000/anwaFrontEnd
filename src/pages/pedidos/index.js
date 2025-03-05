@@ -18,9 +18,13 @@ import Footer from "examples/Footer";
 import OrderCard from "layouts/orders/components/OrderCard";
 import AddOrderModal from "layouts/orders/components/AddOrderModal";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { useContext } from "react";
+import AuthContext from "../../context/AuthContext"; 
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+//const API_BASE_URL = "http://127.0.0.1:8000"
 function Orders() {
+const { token } = useContext(AuthContext); // Obtener el token desde el contexto
   const [orders, setOrders] = useState([]);
   const [openModal, setOpenModal] = useState(false);
 
@@ -29,13 +33,40 @@ function Orders() {
   }, []);
 
   const fetchOrders = async () => {
+    
+
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/pedidos-en-proceso/`);
-      setOrders(response.data);
+        const response = await axios.get(`${API_BASE_URL}/api/pedidos/`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        setOrders(response.data);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+        console.error("Error fetching orders:", error);
+    }
+};
+
+const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await axios.patch(
+        `${API_BASE_URL}/api/pedidos/${orderId}/`, 
+        { estado_pedido: newStatus },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      fetchOrders(); // Recargar la lista de pedidos después de actualizar el estado
+    } catch (error) {
+      console.error("Error actualizando el estado del pedido:", error);
     }
   };
+  
 
   return (
     <DashboardLayout>
@@ -48,12 +79,13 @@ function Orders() {
           </Button>
         </SoftBox>
         <Grid container spacing={3}>
-          {orders.map((order, index) => (
-            <Grid item xs={12} md={6} lg={4} key={index}>
-              <OrderCard order={order} />
-            </Grid>
-          ))}
-        </Grid>
+  {orders.map((order, index) => (
+    <Grid item xs={12} md={6} lg={4} key={index}>
+      <OrderCard order={order} updateOrderStatus={updateOrderStatus} />
+    </Grid>
+  ))}
+</Grid>
+
       </SoftBox>
       <Footer />
       <AddOrderModal open={openModal} handleClose={() => setOpenModal(false)} fetchOrders={fetchOrders} />
