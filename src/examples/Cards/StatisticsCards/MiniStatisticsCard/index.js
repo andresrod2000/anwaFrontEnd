@@ -26,10 +26,18 @@ import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 
 function MiniStatisticsCard({ bgColor, title, count, percentage, icon, direction }) {
-  console.log('bgColor',bgColor);
+  const isCustomColor = ![
+    "white", "primary", "secondary", "info", "success", "warning", "error", "dark"
+  ].includes(bgColor);
+  
   return (
     <Card>
-      <SoftBox bgColor={bgColor} variant="gradient">
+      <SoftBox 
+  bgColor={isCustomColor ? "transparent" : bgColor} 
+  style={isCustomColor ? { backgroundColor: bgColor } : {}}
+  variant="gradient"
+>
+
         <SoftBox p={2}>
           <Grid container alignItems="center">
             {direction === "left" ? (
@@ -119,16 +127,12 @@ MiniStatisticsCard.defaultProps = {
 
 // Typechecking props for the MiniStatisticsCard
 MiniStatisticsCard.propTypes = {
-  bgColor: PropTypes.oneOf([
-    "white",
-    "primary",
-    "secondary",
-    "info",
-    "success",
-    "warning",
-    "error",
-    "dark",
+  bgColor: PropTypes.oneOfType([
+    PropTypes.oneOf(["white", "primary", "secondary", "info", "success", "warning", "error", "dark"]),
+    PropTypes.string, // Esto permite otros colores personalizados
   ]),
+  
+  
   title: PropTypes.PropTypes.shape({
     fontWeight: PropTypes.oneOf(["light", "regular", "medium", "bold"]),
     text: PropTypes.string,

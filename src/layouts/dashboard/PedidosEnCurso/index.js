@@ -51,9 +51,9 @@ const PedidosEnCurso = () => {
   };
 
   return (
-    <Card sx={{ height: "100%", p: 2, backgroundColor: "#FF5733", color: "white" }}>
+    <Card sx={{ height: "100%", p: 2, backgroundColor: "white", color: "white" }}>
       <SoftBox mb={2}>
-        <SoftTypography variant="h5" fontWeight="bold" color="white">
+        <SoftTypography variant="h5" fontWeight="bold" color="#FA5537">
           Pedidos en Curso
         </SoftTypography>
       </SoftBox>
@@ -80,7 +80,7 @@ const PedidosEnCurso = () => {
                   {pedido.estado}
                 </span>
               }
-              sx={{ color: "white !important" }}
+              sx={{ color: "#FA5537 !important" }}
               secondaryTypographyProps={{
                 style: { color: getColorEstado(pedido.estado), fontWeight: "bold" },
               }}

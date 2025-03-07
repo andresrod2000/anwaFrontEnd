@@ -12,6 +12,8 @@ Coded by www.creative-tim.com
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
+import "./index.css";  // O "./App.css" si es donde agregaste Tailwind
+
   // Contexto de autenticación
 import PrivateRoute from "./utils/PrivateRoute";  // Ruta protegida
 import LoginPage from "pages/LoginPage";

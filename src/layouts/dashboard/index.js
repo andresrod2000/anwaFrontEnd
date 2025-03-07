@@ -55,7 +55,7 @@ function Dashboard() {
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6} xl={3}>
               <MiniStatisticsCard
-                bgColor="success" 
+                bgColor="#FA5537" 
                 title={{ text: "Ganancias de hoy" }}
                 count="$53,000"
                 percentage={{ color: "success", text: "+55%" }}
@@ -64,7 +64,7 @@ function Dashboard() {
             </Grid>
             <Grid item xs={12} sm={6} xl={3}>
               <MiniStatisticsCard
-              bgColor="info"
+              bgColor="#FA9937"
                 title={{ text: "Clientes de Hoy" }}
                 count="2,300"
                 percentage={{ color: "success", text: "+3%" }}
@@ -73,7 +73,7 @@ function Dashboard() {
             </Grid>
             <Grid item xs={12} sm={6} xl={3}>
               <MiniStatisticsCard
-                bgColor = "warning"
+                bgColor = "#FA7737"
                 title={{ text: "Producto más Popular de Hoy" }}
                 count="+3,462"
                 percentage={{ color: "error", text: "-2%" }}
@@ -82,7 +82,7 @@ function Dashboard() {
             </Grid>
             <Grid item xs={12} sm={6} xl={3}>
               <MiniStatisticsCard
-                bgColor="secondary"
+                bgColor="#FA3947"
                 title={{ text: "Ventas de Hoy" }}
                 count="$103,430"
                 percentage={{ color: "success", text: "+5%" }}
