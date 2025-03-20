@@ -111,7 +111,7 @@ function FraseDelDia() {
               display="grid"
               justifyContent="center"
               alignItems="center"
-              bgColor="warning"
+              bgColor="pink"
               borderRadius="lg"
               variant="gradient"
             >
