@@ -27,7 +27,7 @@ import wavesWhite from "assets/images/shapes/waves-white.svg";
 import rocketWhite from "assets/images/illustrations/hamburguesa.png";
 import { useState, useEffect } from "react";
 
-function BuildByDevelopers() {
+function FraseDelDia() {
   const [phrase, setPhrase] = useState("");
   const [author, setAuthor] = useState("");
   const [loading, setLoading] = useState(true);
@@ -65,7 +65,7 @@ function BuildByDevelopers() {
             <SoftBox display="flex" flexDirection="column" height="100%">
               <SoftBox pt={1} mb={0.5}>
                 <SoftTypography variant="body2" color="text" fontWeight="medium">
-                  Build by developers
+                  Hola, bienvenido de nuevo
                 </SoftTypography>
               </SoftBox>
               <SoftTypography variant="h5" fontWeight="bold" gutterBottom>
@@ -134,4 +134,4 @@ function BuildByDevelopers() {
   );
 }
 
-export default BuildByDevelopers;
+export default FraseDelDia;
