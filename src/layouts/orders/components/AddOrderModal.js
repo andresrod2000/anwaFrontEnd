@@ -1,21 +1,13 @@
 import { useState, useContext } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import AuthContext from "../../../context/AuthContext";
 
-import AuthContext from "../../../context/AuthContext"; 
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Ajusta si es necesario
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function AddOrderModal({ open, handleClose, fetchOrders }) {
-  const { token } = useContext(AuthContext); // Obtener el token desde el contexto
+  const { token } = useContext(AuthContext);
 
-  // Estado para los campos del formulario
   const [nombreCliente, setNombreCliente] = useState("");
   const [telefono, setTelefono] = useState("");
   const [direccion, setDireccion] = useState("");
@@ -30,10 +22,10 @@ function AddOrderModal({ open, handleClose, fetchOrders }) {
         telefono,
         direccion_domicilio: direccion,
         metodo_pago: metodoPago,
-        estado_pedido: "recibido", // Estado inicial del pedido
+        estado_pedido: "recibido",
         detalles_pedido: detallesPedido,
         total,
-        comentarios: "", // Opcional
+        comentarios: "",
       };
 
       await axios.post(`${API_BASE_URL}/api/pedidos/`, newOrder, {
@@ -43,7 +35,6 @@ function AddOrderModal({ open, handleClose, fetchOrders }) {
         },
       });
 
-      // Actualizar la lista de pedidos después de agregar uno nuevo
       fetchOrders();
       handleClose();
     } catch (error) {
@@ -51,68 +42,109 @@ function AddOrderModal({ open, handleClose, fetchOrders }) {
     }
   };
 
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Agregar Pedido</DialogTitle>
-      <DialogContent>
-        <TextField
-          label="Nombre del Cliente"
-          fullWidth
-          value={nombreCliente}
-          onChange={(e) => setNombreCliente(e.target.value)}
-          margin="dense"
-        />
-        <TextField
-          label="Teléfono"
-          fullWidth
-          value={telefono}
-          onChange={(e) => setTelefono(e.target.value)}
-          margin="dense"
-        />
-        <TextField
-          label="Dirección"
-          fullWidth
-          value={direccion}
-          onChange={(e) => setDireccion(e.target.value)}
-          margin="dense"
-        />
-        <TextField
-          label="Método de Pago"
-          fullWidth
-          value={metodoPago}
-          onChange={(e) => setMetodoPago(e.target.value)}
-          margin="dense"
-        />
-        <TextField
-          label="Detalles del Pedido"
-          fullWidth
-          multiline
-          value={detallesPedido}
-          onChange={(e) => setDetallesPedido(e.target.value)}
-          margin="dense"
-        />
-        <TextField
-          label="Total"
-          fullWidth
-          type="number"
-          value={total}
-          onChange={(e) => setTotal(e.target.value)}
-          margin="dense"
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="secondary">
-          Cancelar
-        </Button>
-        <Button onClick={handleSubmit} color="primary">
-          Agregar Pedido
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden animate-fade-in">
+        {/* Encabezado visual naranja */}
+        <div className="bg-gradient-to-r from-orange-500 to-yellow-400 text-white p-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">🍽️ Nuevo Pedido</h2>
+            <button
+              onClick={handleClose}
+              className="text-white text-2xl hover:text-gray-100 font-bold"
+            >
+              &times;
+            </button>
+          </div>
+          <p className="text-sm mt-1 opacity-90">Completa los datos para registrar el pedido</p>
+        </div>
+
+        {/* Formulario */}
+        <div className="p-6 space-y-4 bg-white">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              type="text"
+              placeholder="Nombre del Cliente"
+              className="input-style"
+              value={nombreCliente}
+              onChange={(e) => setNombreCliente(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Teléfono"
+              className="input-style"
+              value={telefono}
+              onChange={(e) => setTelefono(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Dirección"
+              className="input-style col-span-full"
+              value={direccion}
+              onChange={(e) => setDireccion(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Método de Pago"
+              className="input-style"
+              value={metodoPago}
+              onChange={(e) => setMetodoPago(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Total ($)"
+              className="input-style"
+              value={total}
+              onChange={(e) => setTotal(e.target.value)}
+            />
+          </div>
+
+          <textarea
+            placeholder="Detalles del Pedido"
+            className="input-style w-full h-24 resize-none"
+            value={detallesPedido}
+            onChange={(e) => setDetallesPedido(e.target.value)}
+          />
+
+          {/* Botones */}
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              onClick={handleClose}
+              className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 transition"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="px-6 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold transition"
+            >
+              Guardar Pedido
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Estilos reutilizables */}
+      <style>
+        {`
+          .input-style {
+            @apply border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm;
+          }
+          .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+          }
+          @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+          }
+        `}
+      </style>
+    </div>
   );
 }
 
-// Validación de props con PropTypes
 AddOrderModal.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
