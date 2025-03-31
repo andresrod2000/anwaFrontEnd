@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Soft UI Dashboard React - v4.0.1
+* Soft UI Dashboard React - v420.1
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
@@ -31,8 +31,8 @@ Coded by www.creative-tim.com
   inside (nested routes), you need to pass the nested routes inside an array as a value for the `collapse` key.
   8. The `route` key is used to store the route location which is used for the react router.
   9. The `href` key is used to store the external links location.
-  10. The `title` key is only for the item with the type of `title` and its used for the title text on the Sidenav.
-  10. The `component` key is used to store the component of its route.
+  20. The `title` key is only for the item with the type of `title` and its used for the title text on the Sidenav.
+  20. The `component` key is used to store the component of its route.
 */
 
 // Soft UI Dashboard React layouts
@@ -51,10 +51,10 @@ import LoginPage from "pages/LoginPage";
 const routes = [
   {
     type: "collapse",
-    name: "Dashboard",
+    name: "inicio",
     key: "dashboard",
     route: "/dashboard",
-    icon: <LayoutDashboard size="12px" />,
+    icon: <LayoutDashboard size="20px" />,
     component: <Dashboard />,
     noCollapse: true,
     private: true,
@@ -64,7 +64,7 @@ const routes = [
     name: "Productos",
     key: "productos",
     route: "/productos",
-    icon: <Package size="12px" />,
+    icon: <Package size="20px" />,
     component: <Tables />,
     noCollapse: true,
     private: true,
@@ -74,7 +74,7 @@ const routes = [
     name: "Pedidos",
     key: "pedidos",
     route: "/pedidos",
-    icon: <Package size="12px" />,
+    icon: <Package size="20px" />,
     component: <Orders />,
     noCollapse: true,
     private: true,
@@ -84,7 +84,7 @@ const routes = [
     name: "Ventas",
     key: "ventas",
     route: "/ventas",
-    icon: <ShoppingCart  size="12px" />,
+    icon: <ShoppingCart  size="20px" />,
     component: <Tables />,
     noCollapse: true,
     private: true,
@@ -94,7 +94,7 @@ const routes = [
     name: "Usuarios",
     key: "usuarios",
     route: "/usuarios",
-    icon: <Users  size="12px" />,
+    icon: <Users  size="20px" />,
     component: <Tables />,
     noCollapse: true,
     private: true,
@@ -104,7 +104,7 @@ const routes = [
     name: "Proveedores",
     key: "proveedores",
     route: "/proveedores",
-    icon: <Truck  size="12px" />,
+    icon: <Truck  size="20px" />,
     component: <Tables />,
     noCollapse: true,
     private: true,
@@ -114,40 +114,40 @@ const routes = [
     name: "Categorias",
     key: "categorias",
     route: "/categorias",
-    icon: <Layers  size="12px" />,
+    icon: <Layers  size="20px" />,
     component: <Tables />,
     noCollapse: true,
     private: true,
   },
   {
     type: "collapse",
-    name: "Billing",
+    name: "facturacíon",
     key: "billing",
     route: "/billing",
-    icon: <CreditCard size="12px" />,
+    icon: <CreditCard size="20px" />,
     component: <Billing />,
     noCollapse: true,
     private: true,
   },
  
  
-  { type: "title", title: "Account Pages", key: "account-pages" },
+  { type: "title", title: "paginas de cuenta", key: "account-pages" },
   {
     type: "collapse",
     name: "Auditoria",
     key: "auditoria",
     route: "/auditoria",
-    icon: <CustomerSupport size="12px" />,
+    icon: <CustomerSupport size="20px" />,
     component: <Profile />,
     noCollapse: true,
     private: true,
   },
   {
     type: "collapse",
-    name: "Profile",
+    name: "Perfiles",
     key: "profile",
     route: "/profile",
-    icon: <CustomerSupport size="12px" />,
+    icon: <CustomerSupport size="20px" />,
     component: <Profile />,
     noCollapse: true,
     private: true,
