@@ -41,6 +41,7 @@ import Tables from "layouts/tables";
 import Billing from "layouts/billing";
 import Profile from "layouts/profile";
 import Orders from "pages/pedidos/";
+import Productos from "pages/productos/";
 import { LayoutDashboard, Package, ShoppingCart, Users, Truck, Layers } from "lucide-react";
 
 // Soft UI Dashboard React icons
@@ -65,7 +66,7 @@ const routes = [
     key: "productos",
     route: "/productos",
     icon: <Package size="20px" />,
-    component: <Tables />,
+    component: <Productos />,
     noCollapse: true,
     private: true,
   },
