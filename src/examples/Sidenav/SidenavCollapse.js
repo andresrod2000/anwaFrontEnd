@@ -44,7 +44,11 @@ function SidenavCollapse({ color, icon, name, children, active, noCollapse, open
   return (
     <>
       <ListItem component="li">
-        <SoftBox {...rest} sx={(theme) => collapseItem(theme, { active, transparentSidenav })}>
+        <SoftBox
+          {...rest}
+          className="menu-item" // Aplicamos la clase al contenedor
+          sx={(theme) => collapseItem(theme, { active, transparentSidenav })}
+        >
           <ListItemIcon
             sx={(theme) => collapseIconBox(theme, { active, transparentSidenav, color })}
           >
@@ -91,3 +95,4 @@ SidenavCollapse.propTypes = {
 };
 
 export default SidenavCollapse;
+

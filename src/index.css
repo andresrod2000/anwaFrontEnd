@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.menu-item {
+    display: flex;
+    align-items: center;
+    transition: transform 2.0s ease;
+  }
+  
+  .menu-item:hover {
+    transform: translateX(15px); /* Mueve el ícono y el texto a la derecha */
+  }
+  

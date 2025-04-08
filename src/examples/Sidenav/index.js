@@ -97,15 +97,15 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         </Link>
       ) : (
         <NavLink to={route} key={key}>
-          <SidenavCollapse
-            color={color}
-            key={key}
-            name={name}
-            icon={icon}
-            active={key === collapseName}
-            noCollapse={noCollapse}
-          />
-        </NavLink>
+    <SidenavCollapse
+      color={color}
+      key={key}
+      name={name}
+      active={key === collapseName}
+      noCollapse={noCollapse}
+      icon={<span className="menu-icon">{icon}</span>} // Aquí agregamos la clase
+    />
+  </NavLink>
       );
     } else if (type === "title") {
       returnValue = (

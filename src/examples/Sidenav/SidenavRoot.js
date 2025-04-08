@@ -75,8 +75,16 @@ export default styled(Drawer)(({ theme, ownerState }) => {
     "& .MuiDrawer-paper": {
       boxShadow: xxl,
       border: "none",
-
       ...(miniSidenav ? drawerCloseStyles() : drawerOpenStyles()),
     },
+  
+    "& .menu-icon": {
+      transition: "transform 0.3s ease !important",
+    },
+    
+    "& .menu-icon:hover": {
+      transform: "translateX(500px) !important",
+    },
+    
   };
 });
