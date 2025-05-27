@@ -44,6 +44,8 @@ import Orders from "pages/pedidos/";
 import Productos from "pages/productos/";
 import { LayoutDashboard, Package, ShoppingCart, Users, Truck, Layers } from "lucide-react";
 import Ventas  from "pages/ventas";
+import Proveedores from "pages/proveedores";
+import Categorias from "pages/categorias";
 // Soft UI Dashboard React icons
 
 import CustomerSupport from "examples/Icons/CustomerSupport";
@@ -106,7 +108,7 @@ const routes = [
     key: "proveedores",
     route: "/proveedores",
     icon: <Truck  size="20px" />,
-    component: <Usuarios />,
+    component: <Proveedores />,
     noCollapse: true,
     private: true,
   },
@@ -116,7 +118,7 @@ const routes = [
     key: "categorias",
     route: "/categorias",
     icon: <Layers  size="20px" />,
-    component: <Usuarios />,
+    component: <Categorias />,
     noCollapse: true,
     private: true,
   },
