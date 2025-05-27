@@ -37,13 +37,13 @@ Coded by www.creative-tim.com
 
 // Soft UI Dashboard React layouts
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
+import Usuarios from "layouts/tables";
 import Billing from "layouts/billing";
 import Profile from "layouts/profile";
 import Orders from "pages/pedidos/";
 import Productos from "pages/productos/";
 import { LayoutDashboard, Package, ShoppingCart, Users, Truck, Layers } from "lucide-react";
-
+import Ventas  from "pages/ventas";
 // Soft UI Dashboard React icons
 
 import CustomerSupport from "examples/Icons/CustomerSupport";
@@ -86,7 +86,7 @@ const routes = [
     key: "ventas",
     route: "/ventas",
     icon: <ShoppingCart  size="20px" />,
-    component: <Tables />,
+    component: <Ventas />,
     noCollapse: true,
     private: true,
   },
@@ -96,7 +96,7 @@ const routes = [
     key: "usuarios",
     route: "/usuarios",
     icon: <Users  size="20px" />,
-    component: <Tables />,
+    component: <Usuarios />,
     noCollapse: true,
     private: true,
   },
@@ -106,7 +106,7 @@ const routes = [
     key: "proveedores",
     route: "/proveedores",
     icon: <Truck  size="20px" />,
-    component: <Tables />,
+    component: <Usuarios />,
     noCollapse: true,
     private: true,
   },
@@ -116,7 +116,7 @@ const routes = [
     key: "categorias",
     route: "/categorias",
     icon: <Layers  size="20px" />,
-    component: <Tables />,
+    component: <Usuarios />,
     noCollapse: true,
     private: true,
   },
