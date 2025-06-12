@@ -83,7 +83,7 @@ export default styled(Drawer)(({ theme, ownerState }) => {
     },
     
     "& .menu-icon:hover": {
-      transform: "translateX(500px) !important",
+      transform: "translateX(3px) !important",
     },
     
   };

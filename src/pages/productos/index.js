@@ -75,7 +75,7 @@ import AuthContext from "../../context/AuthContext";
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 // ======= COMPONENTE PRODUCTCARD MEJORADO =======
-const ProductCard = ({ producto, updateProductStatus }) => {
+const ProductCard = ({ producto, updateProductStatus, categorias = [] }) => {
   const [openStatusDialog, setOpenStatusDialog] = useState(false);
   const [newStatus, setNewStatus] = useState(producto.disponible ? "disponible" : "no_disponible");
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
@@ -91,6 +91,13 @@ const ProductCard = ({ producto, updateProductStatus }) => {
       currency: 'COP',
       minimumFractionDigits: 0
     }).format(price);
+  };
+
+  // ✅ NUEVO: Función para obtener nombre de categoría por ID
+  const getCategoryName = (categoryId) => {
+    if (!categoryId) return "Sin categoría";
+    const category = categorias.find(cat => cat.id === categoryId);
+    return category ? category.nombre : "Sin categoría";
   };
 
   return (
@@ -173,7 +180,7 @@ const ProductCard = ({ producto, updateProductStatus }) => {
               {formatPrice(producto.precio)}
             </Typography>
             <Chip 
-              label={producto.categoria || "Sin categoría"}
+              label={getCategoryName(producto.categoria)}
               variant="outlined"
               size="small"
               color="primary"
@@ -314,7 +321,7 @@ const ProductCard = ({ producto, updateProductStatus }) => {
                 Categoría:
               </Typography>
               <Typography variant="body1">
-                {producto.categoria || "Sin categoría"}
+                {getCategoryName(producto.categoria)}
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -340,14 +347,15 @@ ProductCard.propTypes = {
     nombre: PropTypes.string.isRequired,
     descripcion: PropTypes.string,
     precio: PropTypes.number.isRequired,
-    categoria: PropTypes.string,
+    categoria: PropTypes.number, // ✅ Ahora es número (ID)
     disponible: PropTypes.bool.isRequired,
     imagen: PropTypes.string,
   }).isRequired,
   updateProductStatus: PropTypes.func.isRequired,
+  categorias: PropTypes.array, // ✅ NUEVO: Array de categorías
 };
 
-// ======= COMPONENTE ADDPRODUCTMODAL MEJORADO =======
+// ======= COMPONENTE ADDPRODUCTMODAL CORREGIDO =======
 const AddProductModal = ({ open, handleClose, fetchProductos }) => {
   const { token } = useContext(AuthContext);
   
@@ -355,24 +363,42 @@ const AddProductModal = ({ open, handleClose, fetchProductos }) => {
     nombre: "",
     descripcion: "",
     precio: "",
-    categoria: "",
+    categoria: "", // Ahora será idCategoria (número)
     disponible: true,
     imagen: null
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
+  
+  // ✅ NUEVO: Estados para categorías dinámicas
+  const [categorias, setCategorias] = useState([]);
+  const [loadingCategorias, setLoadingCategorias] = useState(false);
 
-  const categoriasPredefinidas = [
-    "Hamburguesas",
-    "Perros Calientes", 
-    "Bebidas",
-    "Postres",
-    "Entradas",
-    "Ensaladas",
-    "Acompañamientos",
-    "Especialidades"
-  ];
+  // ✅ NUEVO: Fetch categorías al abrir el modal
+  useEffect(() => {
+    if (open) {
+      fetchCategorias();
+    }
+  }, [open, token]);
+
+  const fetchCategorias = async () => {
+    setLoadingCategorias(true);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/categoriasproducto/`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      setCategorias(response.data);
+      console.log("Categorías cargadas:", response.data); // Debug
+    } catch (error) {
+      console.error("Error fetching categorias:", error);
+      setError("Error al cargar las categorías");
+    } finally {
+      setLoadingCategorias(false);
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -411,24 +437,45 @@ const AddProductModal = ({ open, handleClose, fetchProductos }) => {
       return;
     }
 
+    // ✅ IMPORTANTE: Validar que categoria sea un número válido
+    if (formData.categoria && isNaN(Number(formData.categoria))) {
+      setError("Error en la categoría seleccionada");
+      setLoading(false);
+      return;
+    }
+
     const submitData = new FormData();
     submitData.append("nombre", formData.nombre);
     submitData.append("descripcion", formData.descripcion);
     submitData.append("precio", formData.precio);
-    submitData.append("categoria", formData.categoria);
+    
+    // ✅ CORRECCIÓN: Solo agregar categoría si existe y convertir a número
+    if (formData.categoria) {
+      submitData.append("categoria", Number(formData.categoria));
+    }
+    
     submitData.append("disponible", formData.disponible);
     
     if (formData.imagen) {
       submitData.append("imagen", formData.imagen);
     }
 
+    // ✅ DEBUG: Mostrar qué datos se envían
+    console.log("Datos del formulario:");
+    console.log("- Nombre:", formData.nombre);
+    console.log("- Categoría:", formData.categoria, typeof formData.categoria);
+    console.log("- Precio:", formData.precio);
+    console.log("- Disponible:", formData.disponible);
+
     try {
-      await axios.post(`${API_BASE_URL}/api/productosmod/`, submitData, {
+      const response = await axios.post(`${API_BASE_URL}/api/productosmod/`, submitData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
+      
+      console.log("Producto creado exitosamente:", response.data);
       
       // Resetear formulario
       setFormData({
@@ -445,7 +492,17 @@ const AddProductModal = ({ open, handleClose, fetchProductos }) => {
       handleClose();
     } catch (error) {
       console.error("Error creando producto:", error);
-      setError("Error al crear el producto. Intenta nuevamente.");
+      console.error("Response data:", error.response?.data); // ✅ Log detallado del error
+      
+      // Mostrar error específico si está disponible
+      if (error.response?.data) {
+        const errorMessages = Object.entries(error.response.data)
+          .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+          .join('\n');
+        setError(`Error: ${errorMessages}`);
+      } else {
+        setError("Error al crear el producto. Intenta nuevamente.");
+      }
     } finally {
       setLoading(false);
     }
@@ -582,22 +639,29 @@ const AddProductModal = ({ open, handleClose, fetchProductos }) => {
               </Grid>
 
               <Grid item xs={12} sm={6}>
+                {/* ✅ COMPONENTE CORREGIDO: Select con categorías dinámicas */}
                 <FormControl fullWidth>
                   <InputLabel>Categoría</InputLabel>
                   <Select
                     value={formData.categoria}
                     label="Categoría"
                     onChange={(e) => handleInputChange("categoria", e.target.value)}
+                    disabled={loadingCategorias}
                   >
                     <MenuItem value="">
-                      <em>Seleccionar categoría</em>
+                      <em>{loadingCategorias ? "Cargando..." : "Seleccionar categoría"}</em>
                     </MenuItem>
-                    {categoriasPredefinidas.map((cat) => (
-                      <MenuItem key={cat} value={cat}>
-                        {cat}
-                      </MenuItem>
-                    ))}
+                    {categorias.map((cat) => (
+                <MenuItem key={cat.id} value={cat.id}>
+                  {cat.nombre} 
+                </MenuItem>
+              ))}
                   </Select>
+                  {loadingCategorias && (
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                      Cargando categorías...
+                    </Typography>
+                  )}
                 </FormControl>
               </Grid>
 
@@ -613,6 +677,8 @@ const AddProductModal = ({ open, handleClose, fetchProductos }) => {
                   label="Producto disponible para la venta"
                 />
               </Grid>
+
+              
             </Grid>
           </Grid>
         </Grid>
@@ -628,7 +694,7 @@ const AddProductModal = ({ open, handleClose, fetchProductos }) => {
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={loading}
+          disabled={loading || loadingCategorias}
           startIcon={loading ? null : <Save />}
         >
           {loading ? "Guardando..." : "Crear Producto"}
@@ -715,7 +781,14 @@ const ProductSkeleton = () => (
 );
 
 // Componente para vista en lista alternativa
-const ProductListItem = ({ producto, updateProductStatus }) => {
+const ProductListItem = ({ producto, updateProductStatus, categorias = [] }) => {
+  // ✅ NUEVO: Función para obtener nombre de categoría por ID
+  const getCategoryName = (categoryId) => {
+    if (!categoryId) return "Sin categoría";
+    const category = categorias.find(cat => cat.idCategoria === categoryId);
+    return category ? category.descripcionCat : "Sin categoría";
+  };
+
   return (
     <Card sx={{ mb: 2, '&:hover': { boxShadow: 4 } }}>
       <CardContent>
@@ -730,7 +803,7 @@ const ProductListItem = ({ producto, updateProductStatus }) => {
                   {producto.nombre}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  {producto.categoria || "Sin categoría"}
+                  {getCategoryName(producto.categoria)}
                 </Typography>
               </Box>
             </Box>
@@ -761,7 +834,8 @@ const ProductListItem = ({ producto, updateProductStatus }) => {
 
 ProductListItem.propTypes = {
   producto: PropTypes.object.isRequired,
-  updateProductStatus: PropTypes.func.isRequired
+  updateProductStatus: PropTypes.func.isRequired,
+  categorias: PropTypes.array, // ✅ NUEVO: Array de categorías
 };
 
 function Productos() {
@@ -770,6 +844,9 @@ function Productos() {
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // ✅ NUEVO: Estado para categorías
+  const [categorias, setCategorias] = useState([]);
   
   // Estados para filtros y vista
   const [busqueda, setBusqueda] = useState("");
@@ -783,7 +860,22 @@ function Productos() {
 
   useEffect(() => {
     fetchProductos();
+    fetchCategorias(); // ✅ NUEVO: Cargar categorías al inicio
   }, []);
+
+  // ✅ NUEVO: Función para cargar categorías
+  const fetchCategorias = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/categoriasproducto/`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      setCategorias(response.data);
+    } catch (error) {
+      console.error("Error fetching categorias:", error);
+    }
+  };
 
   const fetchProductos = async () => {
     setLoading(true);
@@ -826,17 +918,28 @@ function Productos() {
 
   const handleRefresh = () => {
     fetchProductos();
+    fetchCategorias(); // ✅ NUEVO: También refrescar categorías
   };
 
   const handleExport = () => {
     alert("Exportando lista de productos...");
   };
 
+  // ✅ NUEVO: Función para obtener nombre de categoría por ID
+  const getCategoryName = (categoryId) => {
+    if (!categoryId) return "Sin categoría";
+    const category = categorias.find(cat => cat.id === categoryId);
+    return category ? category.nombre : "Sin categoría";
+  };
+
   // Filtrar y ordenar productos
   const productosFiltrados = productos.filter(producto => {
     const matchBusqueda = producto.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
                          producto.descripcion?.toLowerCase().includes(busqueda.toLowerCase());
-    const matchCategoria = filtroCategoria === "" || producto.categoria === filtroCategoria;
+    
+    // ✅ CORREGIDO: Comparar por ID de categoría
+    const matchCategoria = filtroCategoria === "" || producto.categoria === parseInt(filtroCategoria);
+    
     const matchDisponibilidad = filtroDisponibilidad === "" || 
                                (filtroDisponibilidad === "disponible" && producto.disponible) ||
                                (filtroDisponibilidad === "no_disponible" && !producto.disponible);
@@ -849,7 +952,10 @@ function Productos() {
       case "precio":
         return (a.precio || 0) - (b.precio || 0);
       case "categoria":
-        return (a.categoria || "").localeCompare(b.categoria || "");
+        // ✅ CORREGIDO: Ordenar por nombre de categoría
+        const categoryA = getCategoryName(a.categoria);
+        const categoryB = getCategoryName(b.categoria);
+        return categoryA.localeCompare(categoryB);
       default:
         return 0;
     }
@@ -862,14 +968,13 @@ function Productos() {
     page * productosPorPagina
   );
 
-  // Métricas calculadas
+  // ✅ CORREGIDO: Métricas calculadas con categorías únicas
   const totalProductos = productos.length;
   const productosDisponibles = productos.filter(p => p.disponible).length;
-  const categorias = [...new Set(productos.map(p => p.categoria).filter(Boolean))];
+  const categoriasUnicas = [...new Set(productos.map(p => p.categoria).filter(Boolean))];
   const precioPromedio = productos.length > 0 
     ? productos.reduce((sum, p) => sum + (Number.isFinite(Number(p.precio)) ? Number(p.precio) : 0), 0) / productos.length 
     : 0;
-
 
   return (
     <DashboardLayout>
@@ -940,7 +1045,7 @@ function Productos() {
           <Grid item xs={12} sm={6} md={3}>
             <ProductMetricCard
               title="Categorías"
-              value={categorias.length}
+              value={categoriasUnicas.length}
               subtitle="Diferentes tipos"
               icon={<Inventory />}
               color="info"
@@ -949,7 +1054,7 @@ function Productos() {
           <Grid item xs={12} sm={6} md={3}>
             <ProductMetricCard
               title="Precio Promedio"
-              value={`$${precioPromedio.toFixed(0)}`}
+              value={`${precioPromedio.toFixed(0)}`}
               subtitle="Por producto"
               icon={<AttachMoney />}
               color="warning"
@@ -978,6 +1083,7 @@ function Productos() {
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
+                {/* ✅ CORREGIDO: Filtro de categorías usa IDs */}
                 <FormControl fullWidth size="small">
                   <InputLabel>Categoría</InputLabel>
                   <Select
@@ -987,10 +1093,10 @@ function Productos() {
                   >
                     <MenuItem value="">Todas</MenuItem>
                     {categorias.map((categoria) => (
-                      <MenuItem key={categoria} value={categoria}>
-                        {categoria}
-                      </MenuItem>
-                    ))}
+  <MenuItem key={categoria.id} value={categoria.id}>
+    {categoria.nombre}
+  </MenuItem>
+))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -1067,7 +1173,8 @@ function Productos() {
                   <Grid item xs={12} md={6} lg={4} key={producto.id || index}>
                     <ProductCard 
                       producto={producto} 
-                      updateProductStatus={updateProductStatus} 
+                      updateProductStatus={updateProductStatus}
+                      categorias={categorias} // ✅ NUEVO: Pasar categorías
                     />
                   </Grid>
                 ))}
@@ -1079,6 +1186,7 @@ function Productos() {
                     key={producto.id || index}
                     producto={producto}
                     updateProductStatus={updateProductStatus}
+                    categorias={categorias} // ✅ NUEVO: Pasar categorías
                   />
                 ))}
               </Box>
