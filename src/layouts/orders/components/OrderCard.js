@@ -1,111 +1,483 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
+
+// @mui components
+import {
+  Card,
+  CardContent,
+  Typography,
+  Chip,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  IconButton,
+  Divider,
+  Grid,
+  Paper,
+  Fade,
+  Zoom,
+  Tooltip,
+  Avatar,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText
+} from "@mui/material";
+import {
+  Close as CloseIcon,
+  Person as PersonIcon,
+  LocationOn as LocationIcon,
+  Schedule as ScheduleIcon,
+  Payment as PaymentIcon,
+  Restaurant as RestaurantIcon,
+  AttachMoney as MoneyIcon,
+  Edit as EditIcon,
+  Visibility as VisibilityIcon,
+  Phone as PhoneIcon
+} from "@mui/icons-material";
 
 function OrderCard({ order, updateOrderStatus }) {
   const [open, setOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [newStatus, setNewStatus] = useState(order.estado_pedido);
+  const [loading, setLoading] = useState(false);
 
-  const handleChangeStatus = () => {
-    updateOrderStatus(order.id, newStatus);
-    setOpen(false);
+  // Estado y configuración de estilos
+  const estadoConfig = {
+    recibido: { 
+      color: "warning", 
+      icon: "⏰", 
+      bgColor: "#fff3cd",
+      textColor: "#856404",
+      label: "Recibido"
+    },
+    en_preparacion: { 
+      color: "info", 
+      icon: "👨‍🍳", 
+      bgColor: "#d1ecf1",
+      textColor: "#0c5460",
+      label: "En Preparación"
+    },
+    en_camino: { 
+      color: "primary", 
+      icon: "🚚", 
+      bgColor: "#d4edda",
+      textColor: "#155724",
+      label: "En Camino"
+    },
+    entregado: { 
+      color: "success", 
+      icon: "✅", 
+      bgColor: "#d4edda",
+      textColor: "#155724",
+      label: "Entregado"
+    },
+    cancelado: { 
+      color: "error", 
+      icon: "❌", 
+      bgColor: "#f8d7da",
+      textColor: "#721c24",
+      label: "Cancelado"
+    },
   };
 
-  const estadoEstilos = {
-    recibido: { color: "bg-yellow-100 text-yellow-800", icon: "⏰" },
-    en_preparacion: { color: "bg-orange-100 text-orange-800", icon: "👨‍🍳" },
-    en_camino: { color: "bg-blue-100 text-blue-800", icon: "🚚" },
-    entregado: { color: "bg-green-100 text-green-800", icon: "✅" },
-    cancelado: { color: "bg-red-100 text-red-800", icon: "❌" },
+  const currentStatus = estadoConfig[order.estado_pedido] || estadoConfig.recibido;
+
+  const handleChangeStatus = async () => {
+    if (newStatus === order.estado_pedido) {
+      setOpen(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await updateOrderStatus(order.id, newStatus);
+      setOpen(false);
+    } catch (error) {
+      console.error("Error updating status:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const estado = estadoEstilos[order.estado_pedido] || {};
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('es-CO', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getStatusOptions = () => {
+    const allStatuses = ['recibido', 'en_preparacion', 'en_camino', 'entregado', 'cancelado'];
+    return allStatuses.map(status => ({
+      value: status,
+      label: estadoConfig[status].label,
+      icon: estadoConfig[status].icon,
+      disabled: status === 'entregado' && order.estado_pedido === 'cancelado'
+    }));
+  };
 
   return (
     <>
-      {/* Tarjeta estilo burbuja */}
-      <div
-        onClick={() => setOpen(true)}
-        className="relative bg-white border border-orange-100 hover:border-orange-300 rounded-[2rem] shadow-md hover:shadow-xl p-6 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.015]"
-      >
-        {/* Círculo decorativo */}
-        <div className="absolute -top-3 -right-3 w-6 h-6 bg-orange-500 rounded-full shadow-md animate-pulse"></div>
+      {/* Card Principal */}
+      <Zoom in timeout={300}>
+        <Card
+          sx={{
+            borderRadius: 4,
+            overflow: 'hidden',
+            cursor: 'pointer',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            border: '2px solid transparent',
+            position: 'relative',
+            '&:hover': {
+              transform: 'translateY(-8px)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+              borderColor: 'primary.main',
+            },
+            '&:before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 6,
+              background: `linear-gradient(90deg, ${currentStatus.bgColor}, ${currentStatus.textColor})`,
+            }
+          }}
+          onClick={() => setDetailsOpen(true)}
+        >
+          <CardContent sx={{ p: 3, pt: 4 }}>
+            {/* Header con nombre y estado */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  {order.nombre_cliente}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  Pedido #{order.id}
+                </Typography>
+              </Box>
+              
+              <Chip
+                icon={<span style={{ fontSize: '16px' }}>{currentStatus.icon}</span>}
+                label={currentStatus.label}
+                color={currentStatus.color}
+                variant="filled"
+                size="small"
+                sx={{ fontWeight: 'medium' }}
+              />
+            </Box>
 
-        <div className="flex flex-col gap-2">
-          <h3 className="text-xl font-bold text-gray-800">{order.nombre_cliente}</h3>
+            {/* Información básica */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <LocationIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                <Typography variant="body2" color="text.secondary" noWrap>
+                  {order.direccion_domicilio}
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <ScheduleIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                <Typography variant="body2" color="text.secondary">
+                  {formatDate(order.fecha_hora)}
+                </Typography>
+              </Box>
 
-          <div
-            className={`inline-flex items-center text-sm px-3 py-1 rounded-full font-medium w-fit ${estado.color}`}
-          >
-            <span className="mr-1">{estado.icon}</span>
-            {order.estado_pedido.replace("_", " ")}
-          </div>
+              {order.total && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <MoneyIcon sx={{ fontSize: 16, color: 'success.main' }} />
+                  <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'success.main' }}>
+                    {formatCurrency(order.total)}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
 
-          <p className="text-sm text-gray-600">
-            📍 {order.direccion_domicilio}
-          </p>
-
-          <p className="text-xs text-gray-400">
-            {new Date(order.fecha_hora).toLocaleString()}
-          </p>
-        </div>
-      </div>
-
-      {/* Modal para actualizar estado */}
-      {open && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl animate-fade-in">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">Cambiar Estado</h2>
-              <button
-                onClick={() => setOpen(false)}
-                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+            {/* Action buttons */}
+            <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<VisibilityIcon />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDetailsOpen(true);
+                }}
+                sx={{ 
+                  flex: 1, 
+                  textTransform: 'none', 
+                  color: 'primary.main', 
+                  borderColor: 'primary.main', 
+                  '&:hover': {
+                    borderColor: 'primary.dark',
+                    color: 'primary.dark'
+                  } 
+                }}
+                
               >
-                &times;
-              </button>
-            </div>
+                Ver Detalles
+              </Button>
+              
+              <Button
+                size="small"
+                variant="contained"
+                startIcon={<EditIcon />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen(true);
+                }}
+                sx={{ 
+                  flex: 1,
+                  textTransform: 'none',
+                  background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #e55a2b 0%, #e0851a 100%)',
+                  }
+                }}
+              >
+                Cambiar Estado
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      </Zoom>
 
-            <select
+      {/* Modal de Detalles */}
+      <Dialog
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3 }
+        }}
+      >
+        <DialogTitle sx={{ pb: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ bgcolor: 'primary.main' }}>
+                <RestaurantIcon />
+              </Avatar>
+              <Box>
+                <Typography variant="h6">Detalles del Pedido</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Pedido #{order.id}
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton onClick={() => setDetailsOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+
+        <DialogContent>
+          <List sx={{ py: 0 }}>
+            <ListItem>
+              <ListItemIcon>
+                <PersonIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Cliente" 
+                secondary={order.nombre_cliente}
+              />
+            </ListItem>
+
+            {order.telefono && (
+              <ListItem>
+                <ListItemIcon>
+                  <PhoneIcon color="primary" />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Teléfono" 
+                  secondary={order.telefono}
+                />
+              </ListItem>
+            )}
+
+            <ListItem>
+              <ListItemIcon>
+                <LocationIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Dirección" 
+                secondary={order.direccion_domicilio}
+              />
+            </ListItem>
+
+            <ListItem>
+              <ListItemIcon>
+                <ScheduleIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Fecha y Hora" 
+                secondary={formatDate(order.fecha_hora)}
+              />
+            </ListItem>
+
+            {order.metodo_pago && (
+              <ListItem>
+                <ListItemIcon>
+                  <PaymentIcon color="primary" />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Método de Pago" 
+                  secondary={order.metodo_pago.charAt(0).toUpperCase() + order.metodo_pago.slice(1)}
+                />
+              </ListItem>
+            )}
+
+            {order.total && (
+              <ListItem>
+                <ListItemIcon>
+                  <MoneyIcon color="success" />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Total" 
+                  secondary={
+                    <Typography variant="h6" color="success.main" sx={{ fontWeight: 'bold' }}>
+                      {formatCurrency(order.total)}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            )}
+          </List>
+
+          {order.detalles_pedido && (
+            <>
+              <Divider sx={{ my: 2 }} />
+              <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                  Detalles del Pedido:
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {order.detalles_pedido}
+                </Typography>
+              </Paper>
+            </>
+          )}
+
+          {order.comentarios && (
+            <Paper elevation={0} sx={{ p: 2, bgcolor: 'info.light', borderRadius: 2, mt: 2 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                Comentarios:
+              </Typography>
+              <Typography variant="body2">
+                {order.comentarios}
+              </Typography>
+            </Paper>
+          )}
+        </DialogContent>
+
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={() => setDetailsOpen(false)} variant="outlined">
+            Cerrar
+          </Button>
+          <Button 
+            onClick={() => {
+              setDetailsOpen(false);
+              setOpen(true);
+            }}
+            variant="contained"
+            startIcon={<EditIcon />}
+          >
+            Cambiar Estado
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal para cambiar estado */}
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3 }
+        }}
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h6">Cambiar Estado</Typography>
+            <IconButton onClick={() => setOpen(false)} disabled={loading}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+
+        <DialogContent sx={{ pt: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Pedido de <strong>{order.nombre_cliente}</strong>
+          </Typography>
+
+          <FormControl fullWidth>
+            <InputLabel>Estado del Pedido</InputLabel>
+            <Select
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 mb-6 focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+              label="Estado del Pedido"
+              disabled={loading}
             >
-              <option value="recibido">Recibido</option>
-              <option value="en_preparacion">En preparación</option>
-              <option value="en_camino">En camino</option>
-              <option value="entregado">Entregado</option>
-              <option value="cancelado">Cancelado</option>
-            </select>
+              {getStatusOptions().map((option) => (
+                <MenuItem 
+                  key={option.value} 
+                  value={option.value}
+                  disabled={option.disabled}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <span>{option.icon}</span>
+                    {option.label}
+                  </Box>
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </DialogContent>
 
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setOpen(false)}
-                className="px-4 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-100 transition"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleChangeStatus}
-                className="px-5 py-2 text-sm rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-semibold transition"
-              >
-                Actualizar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Animaciones */}
-      <style>
-        {`
-          .animate-fade-in {
-            animation: fadeIn 0.25s ease-out;
-          }
-          @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-          }
-        `}
-      </style>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={() => setOpen(false)} 
+            disabled={loading}
+            variant="outlined"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleChangeStatus}
+            disabled={loading || newStatus === order.estado_pedido}
+            variant="contained"
+            sx={{
+              background: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #e55a2b 0%, #e0851a 100%)',
+              }
+            }}
+          >
+            {loading ? 'Actualizando...' : 'Actualizar Estado'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
@@ -117,6 +489,11 @@ OrderCard.propTypes = {
     estado_pedido: PropTypes.string.isRequired,
     direccion_domicilio: PropTypes.string.isRequired,
     fecha_hora: PropTypes.string.isRequired,
+    telefono: PropTypes.string,
+    metodo_pago: PropTypes.string,
+    total: PropTypes.number,
+    detalles_pedido: PropTypes.string,
+    comentarios: PropTypes.string,
   }).isRequired,
   updateOrderStatus: PropTypes.func.isRequired,
 };

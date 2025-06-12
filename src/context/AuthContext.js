@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
             }
 
             const data = await response.json();
-            console.log("🔑 Token obtenido en login:", data.access);
+            //console.log("🔑 Token obtenido en login:", data.access);
             localStorage.setItem("access_token", data.access);
             setToken(data.access);  // ✅ Se actualiza el estado del token
             fetchUser(data.access);

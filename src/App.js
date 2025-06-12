@@ -55,7 +55,7 @@ import brand from "assets/images/logo-ct.png";
 
 export default function App() {
   const { user } = useContext(AuthContext); //Obtiene el usuario autenticado
-  console.log("Usuario autenticado:", user); //
+  //console.log("Usuario autenticado:", user); //
   const filteredRoutes = routes.filter((route) => !route.private || user);
 
   const [controller, dispatch] = useSoftUIController();
